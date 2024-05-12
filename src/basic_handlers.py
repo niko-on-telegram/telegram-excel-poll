@@ -26,7 +26,7 @@ async def start_message_private(message: types.Message, state: FSMContext) -> No
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=btns)
 
-    start_header = f"{md.bold("Выберите категорию:")} \n\n"
+    start_header = f"{md.bold('Выберите категорию:')} \n\n"
 
     await message.answer(
         text=start_header,
@@ -46,7 +46,7 @@ async def category_input(callback: types.CallbackQuery, state: FSMContext):
     await state.update_data(category_id=category_id)
 
     await callback.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(inline_keyboard=[[]]))
-    await callback.message.edit_text(f"{md.bold("Вы выбрали категорию:")}\n{categories[category_id]}")
+    await callback.message.edit_text(f"{md.bold('Вы выбрали категорию:')}\n{categories[category_id]}")
 
     msg = await callback.message.answer("Отправьте имя человека для номинирования")
     await state.update_data(last_msg_id=msg.message_id)
@@ -62,7 +62,7 @@ async def name_input_handler(message: types.Message, state: FSMContext, bot: Bot
     await state.update_data(name=message.text)
     data = await state.get_data()
 
-    await bot.edit_message_text(f"{md.bold("Вы номинировали:")}\n{message.text}", chat_id=message.chat.id,
+    await bot.edit_message_text(f"{md.bold('Вы номинировали:')}\n{message.text}", chat_id=message.chat.id,
                                 message_id=data['last_msg_id'])
     await message.delete()
 
@@ -88,7 +88,7 @@ async def link_input_handler(message: types.Message, state: FSMContext, bot: Bot
 
     await state.update_data(url=url)
     data = await state.get_data()
-    await bot.edit_message_text(f"{md.bold("Вы отправили ссылку:")}\n{url}", chat_id=message.chat.id,
+    await bot.edit_message_text(f"{md.bold('Вы отправили ссылку:')}\n{url}", chat_id=message.chat.id,
                                 message_id=data['last_msg_id'])
     await message.delete()
 
@@ -109,7 +109,7 @@ async def reason_input_handler(message: types.Message, state: FSMContext, bot: B
     data = await state.get_data()
     data['reason'] = message.text
 
-    await bot.edit_message_text(f"{md.bold("Вы написали:")}\n{message.text}", chat_id=message.chat.id,
+    await bot.edit_message_text(f"{md.bold('Вы написали:')}\n{message.text}", chat_id=message.chat.id,
                                 message_id=data['last_msg_id'])
     await message.delete()
 
