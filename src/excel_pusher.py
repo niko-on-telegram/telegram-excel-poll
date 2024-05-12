@@ -20,7 +20,7 @@ def put_data_to_excel(data: DataToPut):
     creds = ServiceAccountCredentials.from_json_keyfile_name(creds_json, scope)
     client = gspread.authorize(creds)
 
-    spreadsheet = client.open("abacaba")
+    spreadsheet = client.open("Braiders Competition")
 
     sheet = spreadsheet.get_worksheet(0)
 
