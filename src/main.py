@@ -10,7 +10,7 @@ from aiogram.types import BotCommand
 
 from basic_handlers import router as base_router
 from errors_handler import router as errors_router
-from src.middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
+from middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
 from settings import get_logging_config, get_settings
 
 
