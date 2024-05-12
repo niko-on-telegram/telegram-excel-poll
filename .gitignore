@@ -1,0 +1,8 @@
+.idea
+src/*.egg-info
+logs
+.env
+__pycache__
+venv
+test_database.db
+scheetaccesser-ac674548f73b.json
