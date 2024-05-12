@@ -18,6 +18,9 @@ classifiers = [
 dependencies = [
     'aiogram>=3.5.0',
     'pydantic-settings>=2.2.1',
+    'gspread',
+    'oauth2client'
+
 ]
 
 requires-python = ">=3.11"
