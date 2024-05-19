@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Router, types, F, Bot
 from aiogram import md
 from aiogram.enums import ChatType, MessageEntityType
@@ -74,6 +76,7 @@ async def name_input_handler(message: types.Message, state: FSMContext, bot: Bot
 @router.message(States.ENTERING_LINK)
 async def link_input_handler(message: types.Message, state: FSMContext, bot: Bot):
     if not message.entities:
+        logging.info("Url not found, no message entities")
         await message.answer("Ссылка не найдена, попробуйте ещё раз")
         return
 
@@ -81,11 +84,16 @@ async def link_input_handler(message: types.Message, state: FSMContext, bot: Bot
     for ent in message.entities:
         if ent.type == MessageEntityType.URL:
             url = ent.extract_from(message.text)
+            break
+        if ent.type == MessageEntityType.TEXT_LINK:
+            url = ent.url
 
     if not url:
+        logging.info("Url not found in entities")
         await message.answer("Ссылка не найдена, попробуйте ещё раз")
         return
 
+    logging.info(f"Extracted url: {url}")
     await state.update_data(url=url)
     data = await state.get_data()
     new_msg_text = f"{md.bold('Вы отправили ссылку:')}\n{md.link(url, url)}"
