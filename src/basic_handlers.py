@@ -62,7 +62,7 @@ async def name_input_handler(message: types.Message, state: FSMContext, bot: Bot
     await state.update_data(name=message.text)
     data = await state.get_data()
 
-    await bot.edit_message_text(f"{md.bold('Вы номинировали:')}\n{message.text}", chat_id=message.chat.id,
+    await bot.edit_message_text(f"{md.bold('Вы номинировали:')}\n{md.quote(message.text)}", chat_id=message.chat.id,
                                 message_id=data['last_msg_id'])
     await message.delete()
 
@@ -88,7 +88,8 @@ async def link_input_handler(message: types.Message, state: FSMContext, bot: Bot
 
     await state.update_data(url=url)
     data = await state.get_data()
-    await bot.edit_message_text(f"{md.bold('Вы отправили ссылку:')}\n{url}", chat_id=message.chat.id,
+    new_msg_text = f"{md.bold('Вы отправили ссылку:')}\n{md.link(url, url)}"
+    await bot.edit_message_text(new_msg_text, chat_id=message.chat.id,
                                 message_id=data['last_msg_id'])
     await message.delete()
 
@@ -109,7 +110,7 @@ async def reason_input_handler(message: types.Message, state: FSMContext, bot: B
     data = await state.get_data()
     data['reason'] = message.text
 
-    await bot.edit_message_text(f"{md.bold('Вы написали:')}\n{message.text}", chat_id=message.chat.id,
+    await bot.edit_message_text(f"{md.bold('Вы написали:')}\n{md.quote(message.text)}", chat_id=message.chat.id,
                                 message_id=data['last_msg_id'])
     await message.delete()
 
