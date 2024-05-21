@@ -21,15 +21,21 @@ async def start_message_group(message: types.Message) -> None:
 
 @router.message(CommandStart(), F.chat.type == ChatType.PRIVATE)
 async def start_message_private(message: types.Message, state: FSMContext) -> None:
-    await state.clear()
+    await start_poll(message, state)
 
+
+@router.callback_query(F.data == 'nominate_more')
+async def nominate_more_handler(callback: types.CallbackQuery, state: FSMContext):
+    await start_poll(callback.message, state)
+
+
+async def start_poll(message: types.Message, state: FSMContext):
+    await state.clear()
     btns = [
         [InlineKeyboardButton(text=name, callback_data=str(i))] for i, name in enumerate(categories)
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=btns)
-
     start_header = f"{md.bold('Выберите категорию:')} \n\n"
-
     await message.answer(
         text=start_header,
         reply_markup=markup
@@ -123,7 +129,13 @@ async def reason_input_handler(message: types.Message, state: FSMContext, bot: B
     await message.delete()
 
     await state.set_state(None)
-    await message.answer("Спасибо за участие в голосовании!")
+
+    btns = [
+        [InlineKeyboardButton(text="Номинировать ещё участников✍️", callback_data="nominate_more")]
+    ]
+    markup = InlineKeyboardMarkup(inline_keyboard=btns)
+
+    await message.answer("Спасибо за участие в голосовании!", reply_markup=markup)
 
     data_to_put = DataToPut(**data)
     put_data_to_excel(data_to_put)
