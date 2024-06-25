@@ -14,10 +14,8 @@ class UpdatesDumperMiddleware(BaseMiddleware):
         data: Dict[str, Any],
     ) -> Any:
         json_event = event.model_dump_json(exclude_unset=True)
-
+        logging.info(json_event)
         res = await handler(event, data)
         if res is UNHANDLED:
-            logging.warning("Unhandled: %s", str(json_event))
-        else:
-            logging.debug(json_event)
+            logging.warning("Unhandled")
         return res
