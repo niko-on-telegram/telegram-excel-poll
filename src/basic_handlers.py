@@ -131,7 +131,8 @@ async def reason_input_handler(message: types.Message, state: FSMContext, bot: B
     await state.set_state(None)
 
     btns = [
-        [InlineKeyboardButton(text="Номинировать ещё участников✍️", callback_data="nominate_more")]
+        [InlineKeyboardButton(text="Номинировать ещё участников ✍️", callback_data="nominate_more")],
+        [InlineKeyboardButton(text="Купить билет 🎫", url="https://kurs-afromari.ru/premiya")]
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=btns)
 
