@@ -139,4 +139,8 @@ async def reason_input_handler(message: types.Message, state: FSMContext, bot: B
     await message.answer("Спасибо за участие в голосовании!", reply_markup=markup)
 
     data_to_put = DataToPut(**data)
-    put_data_to_excel(data_to_put)
+    try:
+        put_data_to_excel(data_to_put)
+    except Exception:
+        logging.exception(f"Exception happened during put_data_to_excel with args {data_to_put=}")
+        raise
