@@ -17,5 +17,5 @@ class UpdatesDumperMiddleware(BaseMiddleware):
         logging.info(json_event)
         res = await handler(event, data)
         if res is UNHANDLED:
-            logging.warning("Unhandled")
+            logging.warning(f"Unhandled update: {json_event}")
         return res

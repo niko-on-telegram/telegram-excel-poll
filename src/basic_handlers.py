@@ -3,6 +3,7 @@ import logging
 from aiogram import Router, types, F, Bot
 from aiogram import md
 from aiogram.enums import ChatType, MessageEntityType
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -24,22 +25,17 @@ async def start_message_private(message: types.Message, state: FSMContext) -> No
     await start_poll(message, state)
 
 
-@router.callback_query(F.data == 'nominate_more')
+@router.callback_query(F.data == "nominate_more")
 async def nominate_more_handler(callback: types.CallbackQuery, state: FSMContext):
     await start_poll(callback.message, state)
 
 
 async def start_poll(message: types.Message, state: FSMContext):
     await state.clear()
-    btns = [
-        [InlineKeyboardButton(text=name, callback_data=str(i))] for i, name in enumerate(categories)
-    ]
+    btns = [[InlineKeyboardButton(text=name, callback_data=str(i))] for i, name in enumerate(categories)]
     markup = InlineKeyboardMarkup(inline_keyboard=btns)
     start_header = f"{md.bold('Выберите категорию:')} \n\n"
-    await message.answer(
-        text=start_header,
-        reply_markup=markup
-    )
+    await message.answer(text=start_header, reply_markup=markup)
     await state.set_state(States.SELECTING_CATEGORY)
 
 
@@ -53,8 +49,12 @@ async def category_input(callback: types.CallbackQuery, state: FSMContext):
     category_id = int(callback.data)
     await state.update_data(category_id=category_id)
 
-    await callback.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(inline_keyboard=[[]]))
-    await callback.message.edit_text(f"{md.bold('Вы выбрали категорию:')}\n{categories[category_id]}")
+    ans_text = f"{md.bold('Вы выбрали категорию:')}\n{categories[category_id]}"
+
+    try:
+        await callback.message.edit_text(ans_text, reply_markup=None)
+    except TelegramBadRequest:
+        await callback.message.answer(ans_text)
 
     msg = await callback.message.answer("Отправьте имя человека для номинирования")
     await state.update_data(last_msg_id=msg.message_id)
@@ -70,8 +70,11 @@ async def name_input_handler(message: types.Message, state: FSMContext, bot: Bot
     await state.update_data(name=message.text)
     data = await state.get_data()
 
-    await bot.edit_message_text(f"{md.bold('Вы номинировали:')}\n{md.quote(message.text)}", chat_id=message.chat.id,
-                                message_id=data['last_msg_id'])
+    await bot.edit_message_text(
+        f"{md.bold('Вы номинировали:')}\n{md.quote(message.text)}",
+        chat_id=message.chat.id,
+        message_id=data["last_msg_id"],
+    )
     await message.delete()
 
     msg = await message.answer("Отправьте ссылку на этого человека в любой соцсети")
@@ -81,9 +84,10 @@ async def name_input_handler(message: types.Message, state: FSMContext, bot: Bot
 
 @router.message(States.ENTERING_LINK)
 async def link_input_handler(message: types.Message, state: FSMContext, bot: Bot):
+    err_msg = "Не удалось найти ссылку в вашем сообщении, попробуйте ещё раз"
     if not message.entities:
         logging.info("Url not found, no message entities")
-        await message.answer("Ссылка не найдена, попробуйте ещё раз")
+        await message.answer(err_msg)
         return
 
     url = None
@@ -96,15 +100,14 @@ async def link_input_handler(message: types.Message, state: FSMContext, bot: Bot
 
     if not url:
         logging.info("Url not found in entities")
-        await message.answer("Ссылка не найдена, попробуйте ещё раз")
+        await message.answer(err_msg)
         return
 
     logging.info(f"Extracted url: {url}")
     await state.update_data(url=url)
     data = await state.get_data()
     new_msg_text = f"{md.bold('Вы отправили ссылку:')}\n{md.link(url, url)}"
-    await bot.edit_message_text(new_msg_text, chat_id=message.chat.id,
-                                message_id=data['last_msg_id'])
+    await bot.edit_message_text(new_msg_text, chat_id=message.chat.id, message_id=data["last_msg_id"])
     await message.delete()
 
     msg = await message.answer("Напишите, почему вы считаете что данный человек достоин победы в этой номинации?")
@@ -117,22 +120,24 @@ async def link_input_handler(message: types.Message, state: FSMContext, bot: Bot
 async def reason_input_handler(message: types.Message, state: FSMContext, bot: Bot):
     if not message.text:
         await message.answer(
-            "Ввод не распознан, пожалуйста, напишите текстом, почему вы считаете что данный человек достоин "
-            "победы в этой номинации?")
+            "Не поняли вас, пожалуйста, напишите текстом, почему вы считаете что данный человек достоин "
+            "победы в этой номинации?"
+        )
         return
 
     data = await state.get_data()
-    data['reason'] = message.text
+    data["reason"] = message.text
 
-    await bot.edit_message_text(f"{md.bold('Вы написали:')}\n{md.quote(message.text)}", chat_id=message.chat.id,
-                                message_id=data['last_msg_id'])
+    await bot.edit_message_text(
+        f"{md.bold('Вы написали:')}\n{md.quote(message.text)}", chat_id=message.chat.id, message_id=data["last_msg_id"]
+    )
     await message.delete()
 
     await state.set_state(None)
 
     btns = [
         [InlineKeyboardButton(text="Номинировать ещё участников ✍️", callback_data="nominate_more")],
-        [InlineKeyboardButton(text="Купить билет 🎫", url="https://kurs-afromari.ru/premiya")]
+        [InlineKeyboardButton(text="Купить билет 🎫", url="https://kurs-afromari.ru/premiya")],
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=btns)
 

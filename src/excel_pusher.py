@@ -15,7 +15,7 @@ class DataToPut(BaseModel):
 def put_data_to_excel(data: DataToPut):
     creds_json = "scheetaccesser-ac674548f73b.json"
 
-    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
     creds = ServiceAccountCredentials.from_json_keyfile_name(creds_json, scope)
     client = gspread.authorize(creds)
@@ -25,7 +25,7 @@ def put_data_to_excel(data: DataToPut):
     sheet = spreadsheet.get_worksheet(0)
 
     ids_sheet = spreadsheet.get_worksheet(1)
-    last_row = ids_sheet.acell('A1').value
+    last_row = ids_sheet.acell("A1").value
 
     if isinstance(last_row, str):
         last_row = int(last_row)

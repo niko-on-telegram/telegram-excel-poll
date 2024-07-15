@@ -15,8 +15,7 @@ from settings import get_logging_config, get_settings
 
 
 async def set_bot_commands(bot: Bot) -> None:
-    default_commands = [
-        BotCommand(command='/start', description='Начать заново')]
+    default_commands = [BotCommand(command="/start", description="Начать заново")]
 
     await bot.set_my_commands(default_commands)
 
@@ -24,11 +23,13 @@ async def set_bot_commands(bot: Bot) -> None:
 async def main():
     logs_directory = Path("logs")
     logs_directory.mkdir(parents=True, exist_ok=True)
-    logging_config = get_logging_config('bot')
+    logging_config = get_logging_config("bot")
     logging.config.dictConfig(logging_config)
     settings = get_settings()
-    bot = Bot(token=settings.BOT_TOKEN.get_secret_value(),
-              default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN), )
+    bot = Bot(
+        token=settings.BOT_TOKEN.get_secret_value(),
+        default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN),
+    )
     logging.info("bot started")
     storage = MemoryStorage()
     dispatcher = Dispatcher(storage=storage)
@@ -42,5 +43,5 @@ def run_main():
     asyncio.run(main())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_main()
