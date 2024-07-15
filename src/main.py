@@ -5,7 +5,7 @@ from pathlib import Path
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.memory import MemoryStorage, SimpleEventIsolation
 from aiogram.types import BotCommand
 
 from basic_handlers import router as base_router
@@ -32,7 +32,7 @@ async def main():
     )
     logging.info("bot started")
     storage = MemoryStorage()
-    dispatcher = Dispatcher(storage=storage)
+    dispatcher = Dispatcher(storage=storage, events_isolation=SimpleEventIsolation())
     dispatcher.startup.register(set_bot_commands)
     dispatcher.update.outer_middleware(UpdatesDumperMiddleware())
     dispatcher.include_routers(base_router, errors_router)
