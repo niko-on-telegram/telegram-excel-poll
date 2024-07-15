@@ -49,7 +49,7 @@ def get_logging_config(app_name: str):
                 "level": "DEBUG",
                 "formatter": "main",
                 "filename": f"logs/{app_name}_log.log",
-                "maxBytes": 500000,
+                "maxBytes": 10_000_000,
                 "backupCount": 3,
             },
         },
