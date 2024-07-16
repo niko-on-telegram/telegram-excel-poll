@@ -38,13 +38,22 @@ async def main():
 
     # dispatcher.include_routers(base_router, errors_router)
 
+    txt = """Привет) 
+Приём заявок на основные номинации завершен. Спасибо за твои голоса 🫶🏻
+Со всеми прошедшими отбор номинантами мы свяжемся до конца июля.
+
+А пока у тебя ещё есть возможность купить билет на премию брейдинга по самой выгодной цене https://kurs-afromari.ru/premiya 🙌🏻
+
+И ещё чуть позже у тебя появится возможность побороться за номинацию «Самый богатый брейдер» 💵 
+Детали пришлем позже 🤫"""
+
     @dispatcher.message()
     async def global_handler(msg: types.Message):
-        await msg.answer("Приём заявок окончен.\nСпасибо за участие!")
+        await msg.answer(txt)
 
     @dispatcher.callback_query()
     async def global_handler(msg: types.CallbackQuery):
-        await msg.message.answer("Приём заявок окончен.\nСпасибо за участие!")
+        await msg.message.answer(txt)
 
     await dispatcher.start_polling(bot)
 
