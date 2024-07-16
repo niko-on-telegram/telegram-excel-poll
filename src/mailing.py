@@ -174,7 +174,7 @@ txt = '''Привет)
 
 Чем больше раз тебя номинировали, тем выше шанс стать номинантом 😉'''
 
-token = "7479082591:AAH5qMDJfX0HrXUyugY_tOqb-WZZj-BRoHg"
+token =
 
 ignored = [
     7479082591,  # self
